@@ -1,0 +1,41 @@
+#cloud-config
+
+package_update: true
+package_upgrade: true
+
+# APT fails to acquire GPG keys if package dirmngr is missing
+bootcmd:
+  - [ cloud-init-per, once, dirmngr-aptupdate, apt-get, update ]
+  - [ cloud-init-per, once, dirmngr-aptinstall, apt-get, install, dirmngr, -y ]
+  - [ cloud-init-per, once, dirmngr-aptinstall, apt-get, install, gnupg2, -y ]
+
+packages:
+  - curl
+  - qemu-guest-agent
+
+
+# These are general users
+users:
+  - default
+  - name: devops
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    groups: sudo
+    shell: /bin/bash
+    ssh_authorized_keys:
+
+# This is to change the password ONLY for console access
+#chpasswd:
+#  list: |
+#    example:example
+#  expire: False
+
+preserve_hostname: false
+manage_etc_hosts: false
+fqdn: ${hostname}.${domain}
+
+startqemu:
+  - &start_qemu |
+    systemctl start qemu-guest-agent
+
+runcmd:
+ - [ sh, -c, *start_qemu ]

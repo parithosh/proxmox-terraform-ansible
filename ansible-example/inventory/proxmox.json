@@ -1,0 +1,7 @@
+{
+    "url": "https://URL:8006/",
+    "username": "USERNAME@pve",
+    "password": "PASSWORD",
+    "validateCert": false,
+    "qemu_interface": "eth0"
+}
